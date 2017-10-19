@@ -1,145 +1,11 @@
 Parse.initialize("WSw9tShiRqVNExj4V7QQ2uxZMGYrZpzqune2fn6i", "RnMNB3sfpKXXQz8j7XTjiruQ7xRl34jwmYvdv89P");
 
-// ----------------- jQuery Function ----------------- //
 $(document).ready(function ( event ) {
 
-	pageTrack();
-	isUserSignedIn( event );
-	var url = window.location.href;
-	console.log(url);
-	var recommendPage = "http://deecaf.herokuapp.com/recommendation";
-	if(url != recommendPage) {
-		recommend();
-	}
+	isUserSignedIn(event);
+	$("#formSubmit").click(submitForm);
 });
 
-function pageTrack() {
-	$('.backBtn').click(backClick);
-	$('.homeBtn').click(homeClick);
-}
-
-function backClick(e) {
-	console.log("Back Clicked!");
-	ga('send', 'event', 'back', 'click');
-}
-
-function homeClick(e) {
-	console.log("Home clicked!");
-	ga('send', 'event', 'home', 'click');
-}
-
-// Company ( Brand ) selection is Step 1
-$("#brands").on("change", function (event ) {
-	event.preventDefault();
-
-	//alert("YEAH");
-	//console.log(this.id);
-	companyID = this.value;
-});
-
-$("#toTypes").click( function( event ) {
-	event.preventDefault();
-	var companyID = $("#brands").val();
-
-	if ( companyID != "description"  )
-	{
-		selectFromSwipeList ( event, "./types" + "?" + "cid=" + companyID);
-	}
-});
-
-$("#toBeverages").click( function( event ) {
-	event.preventDefault();
-	var beverageID = $("#type").find(':selected').data("bid");
-	var companyID  = $("#type").val();
-	if ( companyID != "description"  )
-		selectFromSwipeList ( event, "./beverages" + "?" + "cid=" + companyID + "&bid=" + beverageID);
-});
-
-$("#toSizes").click( function( event ) {
-	event.preventDefault();
-	var companyID    = $("#beverage").find(':selected').data('cid');
-	var beverageName = $("#beverage").find(':selected').data("name");
-	if ( $("#beverage").find(':selected').val() != "description"  )
-		selectFromSwipeList ( event, "./sizes"+ "?" + "cid=" + companyID + "&name=" + beverageName);
-});
-
-function recommend () {
-  var currentUser = Parse.User.current();
-  var remainingIntake = currentUser.get("remainingCaffeine");
-  var maxIntake = currentUser.get("maxCaffeine");
-	var data;
-	/*
-	$.getJSON("beverages.json", function(json) {
-		console.log(json);
-	});
-	//var beverageObj = beverages["beverages"];
-
-	var recommendBeverages = new Array();
-/*
-	for(i = 0; i < beverageObj.length; i++) {
-		for(j = 0; j < beverageObj[i]; j++){
-			console.log(beverageObj[i][j]);
-		}
-	}
-*/
-  var percentRemaining = remainingIntake/maxIntake;
-  console.log(percentRemaining);
-	$('#remaining').append(remainingIntake);
-	if(remainingIntake > 0) {
-		$("#remaining").css("color", "#00FF00");
-	} else {
-		$("#remaining").css("color", "#FF0000")
-	}
-	var recommendButton = $('<a href=\"/recommendation\" type=\"button\" class=\"btn green-haze\">Recommendations</a>');
-  if(remainingIntake < maxIntake && remainingIntake > 0) {
-		$('#recommendUser').append(recommendButton);
-  } else if (remainingIntake == maxIntake) {
-		$('#recommendMessage').append("Anything's good! (Just remain below your maximum)");
-	} else {
-    $('#recommendMessage').append("Avoid caffeine!");
-		$('#recommendUser').append(recommendButton);
-  }
-
-}
-
-$("#toComplete").click( function( event ) {
-	event.preventDefault();
-
-	// Create Caffeine intake information object
-	var caffeineObj;
-	var caffeineVal  = $("#size").find(':selected').val();
-
-	if ( caffeineVal != "description"  )
-	{
-		var companyID    = $("#size").find(':selected').data('cid');
-		var beverageID   = $("#size").find(':selected').data('bid');
-		var beverageName = $("#size").find(':selected').data('name');
-		var size         = $("#size").find(':selected').data("size");
-
-
-		var currentDate  = new Date();
-		var mon          = currentDate.getMonth()+1;
-		var day          = currentDate.getDate();
-		var year         = currentDate.getFullYear();
-		var dateString   = mon + "/" + day + "/" + year;
-		console.log(dateString);
-
-		caffeineObj = {
-						"name": beverageName,
-						"bid": beverageID,
-						"cid" : companyID,
-						"caffeine" : caffeineVal,
-						"size": size,
-						"date" : dateString
-						};
-
-		showExceedingWarning ( event, caffeineObj );
-	}
-
-
-});
-
-// ----------------- Javascript ---------------------//
 function isUserSignedIn ( event ) {
 
 	var currentUser = Parse.User.current();
@@ -147,20 +13,45 @@ function isUserSignedIn ( event ) {
 	if ( !currentUser ) {
 	    // show the signup or login page
 	    alert("You have to sign in first");
-		window.location.href = "./sign-in.html";
-	}
-	else
-	{
-		//show name after user
-
+		window.location.href = "./sign_in";
 	}
 
 }
 
-function selectFromSwipeList ( event, url ) {
-	//$('.page-type').append("<");
-	window.location.href = url;
+function submitForm( event ) {
+
+
+	//Call current user
+	var currentUser   = Parse.User.current();
+	var caffeineObj;
+	var drinkName     = $("#new-drink-name").val();
+	var caffeineValue = $("#new-caffeine").val();
+	var currentDate   = new Date();
+	var companyID     = Number.MAX_SAFE_INTEGER;
+	var beverageID    = Number.MAX_SAFE_INTEGER;
+	var size          = Number.MAX_SAFE_INTEGER;
+	var mon           = currentDate.getMonth()+1;
+	var day           = currentDate.getDate();
+	var year          = currentDate.getFullYear();
+	var dateString    = mon + "/" + day + "/" + year;
+
+
+
+	caffeineObj = 
+				{
+					"name": drinkName,
+					"bid": beverageID,
+					"cid" : companyID,
+					"caffeine" : caffeineValue,
+					"size": size,
+					"date" : dateString
+				};
+
+	//debugger;
+	showExceedingWarning ( event, caffeineObj );
+
 }
+
 
 function incrementCaffeineIntake( event, caffeineObj ) {
 	//Call current user
@@ -198,7 +89,7 @@ function incrementCaffeineIntake( event, caffeineObj ) {
 					currentUser.save(null, {
 					  success: function(user) {
 					    // Hooray! Let them use the app now.
-					   	selectFromSwipeList ( event, "/");
+					   	window.location.href = "/";;
 
 					  },
 					  error: function(user, error) {
@@ -225,7 +116,7 @@ function incrementCaffeineIntake( event, caffeineObj ) {
 			currentUser.save(null, {
 			  success: function(user) {
 			    // Hooray! Let them use the app now.
-			   	selectFromSwipeList ( event, "/");
+				window.location.href = "/";			   	
 
 			  },
 			  error: function(user, error) {
@@ -234,6 +125,7 @@ function incrementCaffeineIntake( event, caffeineObj ) {
 			  }
 			});
 		}
+
 	}
 }
 
@@ -261,12 +153,12 @@ function updateIntake ( event, caffeine ){
 
 	array = currentUser.get("intakeHistory");
 
-	if(array == undefined)
+	if(array == undefined) 
 	{
 		console.log("first time user, no history yet")
 		var array = [];
 	}
-	else
+	else 
 	{
 		$.each( array, function( index, value )
 		{
@@ -303,6 +195,7 @@ function updateIntake ( event, caffeine ){
 
 }
 
+
 function showExceedingWarning ( event, caffeine ){
 
 	var currentUser = Parse.User.current();
@@ -314,8 +207,7 @@ function showExceedingWarning ( event, caffeine ){
 		var todayscaffeine = currentUser.get("todayscaffeine");
 		var intakeRate = ( ( Number( todayscaffeine ) + Number( intakeCaffeine ) ) / Number( maxCaffeine ) ) ;
 		// if user consume full amount
-		console.log("intake caffeine = " + intakeCaffeine);
-		if( intakeRate >= 1 && intakeCaffeine > 0 )
+		if( intakeRate >= 1 )
 		{
 			bootbox.confirm("You are having more than your daily recommended caffeine value. Are you sure you want to add?", function(result) {
 				if( result )
@@ -334,14 +226,8 @@ function showExceedingWarning ( event, caffeine ){
 }
 
 
-
-// ---------------- Beta testing functions ---------------- //
-/*
-* type - "sleep" or "caffeine"
-*
-*
-*/
 function updateHistory ( event,  type, newValue ){
+
 
 	// Declare Variables
 	var currentUser = Parse.User.current();
@@ -426,6 +312,7 @@ function updateHistory ( event,  type, newValue ){
 				bootbox.alert("Choice must be sleep or caffeine you dumb programmer");
 			}
 		}
+
 
 		statArray.push ( newIntake );
 	}

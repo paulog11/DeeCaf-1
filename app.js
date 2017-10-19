@@ -2,29 +2,26 @@
 /**
  * Module dependencies.
  */
-
-var express = require('express');
-var http = require('http');
-var path = require('path');
+var express    = require('express');
+var http       = require('http');
+var path       = require('path');
 var handlebars = require('express3-handlebars')
 
 
 // Routes
-var index = require('./routes/index');
-var error = require('./routes/error');
-var history = require('./routes/history');
-var myaccount = require('./routes/myaccount');
-var sign_in = require('./routes/sign_in');
-var sign_up = require('./routes/sign_up');
-var statistic = require('./routes/statistic');
-var brands = require('./routes/brands');
-var beverages = require ( './routes/beverages');
-var menu = require('./routes/menu');
-var help = require('./routes/help');
-
-//Alt Routes
-var altbrands = require('./routes/altbrands');
-var altbeverages = require ( './routes/altbeverages');
+var index          = require('./routes/index');
+var error          = require('./routes/error');
+var history        = require('./routes/history');
+var myaccount      = require('./routes/myaccount');
+var sign_in        = require('./routes/sign_in');
+var sign_up        = require('./routes/sign_up');
+var statistic      = require('./routes/statistic');
+var brands         = require('./routes/brands');
+var beverages      = require ( './routes/beverages');
+var menu           = require('./routes/menu');
+var help           = require('./routes/help');
+var addCustomDrink = require('./routes/addCustomDrink');
+var recommend      = require('./routes/recommend');
 
 // Example route
 // var user = require('./routes/user');
@@ -65,12 +62,9 @@ app.get('/types', beverages.beverage_types);
 app.get('/sizes', beverages.beverage_sizes);
 app.get('/menu', menu.menu);
 app.get('/helpdoc', help.view);
+app.get('/addCustomDrink', addCustomDrink.view);
+app.get('/recommendation', recommend.recommend);
 
-//Alt Routes
-app.get('/altbrands', altbrands.brands);
-app.get('/altbeverages', altbeverages.beverages);
-app.get('/alttypes', altbeverages.beverage_types);
-app.get('/altsizes', altbeverages.beverage_sizes);
 
 
 // Example route

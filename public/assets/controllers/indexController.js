@@ -61,18 +61,20 @@ function appendWarning ( event ){
 		var maxCaffeine = currentUser.get("maxCaffeine");
 		var todayscaffeine = currentUser.get("todayscaffeine");
 		var intakeRate = parseInt( 100 * ( todayscaffeine / maxCaffeine ) ) ;
-
+		console.log("intakeRate = " + intakeRate);
 		// if user consume full amount
 		if( intakeRate >= 100 )
 		{
 			$("#danger").show();
 			$("#warning").hide();
+			$("#symptoms").modal();
 		}
 		//if user consume 80% of daily recommendation
-		else if ( intakeRate >= 80 )
+		else if ( intakeRate >= 70 )
 		{
 			$("#danger").hide();
 			$("#warning").show();
+			$("#symptoms").modal();
 		}
 		else
 		{
@@ -89,15 +91,17 @@ function appendWarning ( event ){
 
 
 function goToAddNewCoffeePage( event ) {
-	
+
 	window.location.href = "./brands";
 
 }
 
 function water( event ){
     $('.waterFill').animate({
-        height: '75%'
-    }, 1000)
+        height: '15%',
+        left: "+=40"
+    }, 500)
+
 }
 
 function calculateMaxCaffeineIntake ( event ) {
@@ -113,39 +117,49 @@ function calculateMaxCaffeineIntake ( event ) {
 		var ratio;
 
 		maxCaffeine       = 2.72155 * weight;
+		var remainingIntake = maxCaffeine - currentIntake;
 
 	    currentUser.set("maxCaffeine", parseInt(maxCaffeine));
+			currentUser.set("remainingCaffeine", parseInt(remainingIntake)); 					//remaining intake Parse input
 	    currentUser.save();
 
-	    ratio = parseInt( ( currentIntake / maxCaffeine ) * 100 );
+	    ratio = parseInt( ( currentIntake / maxCaffeine ) * 33 );
+
 	   // $("#maxCaffeine").append( currentIntake + " mg" + " / " + parseInt(maxCaffeine) + "mg" );
 
 	    if ( ratio == 0 )
-	    	ratio = "10%";
-	    else if ( ratio < 100 )
+	    	ratio = "15%";
+	    else if ( ratio < 33 ){
+	    	ratio += 15;
 	    	ratio += "%";
+	    	console.log(ratio);
+	    }
+
 	    else
-	    	ratio = "100%";
+	    	ratio = "48%";
 
 			if(currentIntake == undefined) {
 				console.log("first time user, no data yet")
 			}
 			else {
+				console.log( "new raito = " + ratio )
 				$('.waterFill').animate({
-         	height: ratio
-     		}, 1000);
+         	height: ratio,
+         	left: "+=40"
+     		}, 500);
 			}
 
-	    appendIntakeReport( currentIntake, parseInt(maxCaffeine));
+	    appendIntakeReport( currentIntake, parseInt(maxCaffeine), parseInt(remainingIntake));
 	 }
 
 }
 
-function appendIntakeReport ( current, max )
+function appendIntakeReport ( current, max, remaining)
 {
 	//Clear
 	$("#current").empty();
 	$("#max").empty();
+	$("#remaining").empty();
 
 	//append
 	if(current == undefined)
@@ -154,6 +168,12 @@ function appendIntakeReport ( current, max )
 		$("#current").append( current );
 	}
 	$("#max").append( max );
+	if(remaining > 0) {
+		$("#remaining").css("color", "#00FF00");
+	} else {
+		$("#remaining").css("color", "#FF0000")
+	}
+	$("#remaining").append( remaining );
 }
 
 
